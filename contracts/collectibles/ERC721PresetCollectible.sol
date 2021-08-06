@@ -101,7 +101,26 @@ abstract contract ERC721PresetCollectible is ERC721, ERC721EnumerableCollectible
         _afterTokenMint(to, tokenId);
     }
 
+    /**
+     * @dev After-minting hook. Fires after every mint.
+     */
     function _afterTokenMint(address to, uint256 tokenId) internal virtual;
+
+    //================================================================================
+    // Withdrawal Functions
+    //================================================================================
+
+    /**
+     * @dev Remind parent comtracts to implement withdrawal mechanism.
+     */
+    function widthdraw() external virtual;
+
+    /**
+     * @dev Simple withdrawal implementation. Sends balance to msg.sender.
+     */
+    function _withdraw() internal {
+		payable(msg.sender).transfer(address(this).balance);
+    }
 
     //================================================================================
     // Other Functions
