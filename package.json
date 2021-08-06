@@ -1,0 +1,23 @@
+{
+  "name": "@jpegmint/jpegmint-solidity",
+  "version": "1.0.0",
+  "description": "Smart Contract libraries for Solidity",
+  "main": "index.js",
+  "scripts": {
+    "test": "hardhat test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jpegmint/jpegmint-contracts.git"
+  },
+  "keywords": [
+    "solidity",
+    "ethereum"
+  ],
+  "author": "JPEG Mint <jpeg@jpegmint.xyz> (https://jpegmint.xyz/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jpegmint/jpegmint-contracts/issues"
+  },
+  "homepage": "https://github.com/jpegmint/jpegmint-contracts#readme"
+}
