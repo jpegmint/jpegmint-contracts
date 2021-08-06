@@ -97,14 +97,16 @@ abstract contract ERC721PresetCollectible is ERC721, ERC721EnumerableCollectible
 
     function _mintCollectible(address to) internal virtual {
         uint256 tokenId = _generateTokenId();
+        _beforeTokenMint(to, tokenId);
         _safeMint(to, tokenId);
         _afterTokenMint(to, tokenId);
     }
 
     /**
-     * @dev After-minting hook. Fires after every mint.
+     * @dev Optional pre/post minting hooks.
      */
-    function _afterTokenMint(address to, uint256 tokenId) internal virtual;
+    function _beforeTokenMint(address to, uint256 tokenId) internal virtual {}
+    function _afterTokenMint(address to, uint256 tokenId) internal virtual {}
 
     //================================================================================
     // Withdrawal Functions
