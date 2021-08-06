@@ -10,10 +10,6 @@ import "../collectibles/ERC721PresetCollectible.sol";
 contract MockCollectible is ERC721PresetCollectible, Ownable {
     using Strings for uint256;
 
-    //================================================================================
-    // Constructor
-    //================================================================================
-
     /**
      * @dev Starts paused and initializes metadata.
      */
@@ -31,10 +27,6 @@ contract MockCollectible is ERC721PresetCollectible, Ownable {
         tokenMaxReserved
     ) {}
 
-    //================================================================================
-    // Sale Functions
-    //================================================================================
-
     function startSale() external override onlyOwner {
         _unpause();
     }
@@ -43,19 +35,11 @@ contract MockCollectible is ERC721PresetCollectible, Ownable {
         _pause();
     }
 
-    //================================================================================
-    // Minting Functions
-    //================================================================================
-
-    /**
-     * @dev Add access control to reserve function.
-     */
     function reserveCollectibles() external onlyOwner {
-        super._reserveCollectibles();
+        _reserveCollectibles();
     }
 
-    /**
-     * @dev Select random color, store, and remove from unused in after-mint hook.
-     */
-    function _afterTokenMint(address, uint256 tokenId) internal override {}
+    function withdraw() external override onlyOwner {
+        _withdraw();
+    }
 }
