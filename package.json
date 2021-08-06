@@ -11,7 +11,8 @@
   },
   "keywords": [
     "solidity",
-    "ethereum"
+    "ethereum",
+    "contracts"
   ],
   "author": "JPEG Mint <jpeg@jpegmint.xyz> (https://jpegmint.xyz/)",
   "license": "MIT",

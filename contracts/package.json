@@ -1,0 +1,25 @@
+{
+  "name": "@jpegmint/contracts",
+  "description": "Smart Contracts for Solidity",
+  "version": "0.1.0",
+  "files": [
+    "**/*.sol",
+    "!/mocks/**/*"
+  ],
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jpegmint/jpegmint-contracts.git"
+  },
+  "keywords": [
+    "solidity",
+    "ethereum",
+    "contracts"
+  ],
+  "author": "JPEG Mint <jpeg@jpegmint.xyz> (https://jpegmint.xyz/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jpegmint/jpegmint-contracts/issues"
+  },
+  "homepage": "https://github.com/jpegmint/jpegmint-contracts#readme"
+}
