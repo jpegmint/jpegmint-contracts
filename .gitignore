@@ -1,3 +1,10 @@
+samples
+
+# Hardhat
+artifacts/
+cache/
+secrets.json
+
 # Logs
 logs
 *.log

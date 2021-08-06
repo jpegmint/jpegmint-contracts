@@ -2,7 +2,6 @@
   "name": "@jpegmint/jpegmint-solidity",
   "version": "1.0.0",
   "description": "Smart Contract libraries for Solidity",
-  "main": "index.js",
   "scripts": {
     "test": "hardhat test"
   },
@@ -19,5 +18,20 @@
   "bugs": {
     "url": "https://github.com/jpegmint/jpegmint-contracts/issues"
   },
-  "homepage": "https://github.com/jpegmint/jpegmint-contracts#readme"
+  "homepage": "https://github.com/jpegmint/jpegmint-contracts#readme",
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.1.0"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-etherscan": "^2.1.3",
+    "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "chai": "^4.3.4",
+    "ethereum-waffle": "^3.4.0",
+    "ethers": "^5.4.1",
+    "hardhat": "^2.4.1",
+    "hardhat-gas-reporter": "^1.0.4",
+    "mocha": "^7.2.0",
+    "solidity-coverage": "^0.7.16"
+  }
 }
