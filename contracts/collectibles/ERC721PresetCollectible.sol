@@ -18,8 +18,13 @@ abstract contract ERC721PresetCollectible is ERC721, ERC721EnumerableCollectible
     uint256 internal _tokenMaxPerTxn;
     uint256 internal _tokenMaxReserved;
     
+    /// Events ///
     event SalePaused(address account);
     event SaleUnpaused(address account);
+
+    //================================================================================
+    // Constructor
+    //================================================================================  
 
     /**
      * @dev Starts paused and initializes metadata.
@@ -39,7 +44,10 @@ abstract contract ERC721PresetCollectible is ERC721, ERC721EnumerableCollectible
         _tokenMaxReserved = tokenMaxReserved;
     }
 
-    /// Pausable ///
+    //================================================================================
+    // Pausable Functions
+    //================================================================================
+
     function isPaused() public view virtual returns (bool) {
         return _paused;
     }
@@ -59,7 +67,10 @@ abstract contract ERC721PresetCollectible is ERC721, ERC721EnumerableCollectible
         emit SaleUnpaused(msg.sender);
     }
 
-    /// Minting Functions ///
+    //================================================================================
+    // Minting Functions
+    //================================================================================
+
     function mintCollectibles(uint256 howMany) public virtual payable {
         require(!_paused,  "Collectible: Sale is paused");
         require(availableSupply() > 0, "Collectible: Contract is sold out");
@@ -92,6 +103,10 @@ abstract contract ERC721PresetCollectible is ERC721, ERC721EnumerableCollectible
 
     function _afterTokenMint(address to, uint256 tokenId) internal virtual;
 
+    //================================================================================
+    // Other Functions
+    //================================================================================
+
     /**
      * @dev Helper function to check sale status.
      */
@@ -99,7 +114,6 @@ abstract contract ERC721PresetCollectible is ERC721, ERC721EnumerableCollectible
         return _tokenMaxSupply - totalSupply();
     }
 
-    /// Boilerplate Overrides ///
     function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual override(ERC721, ERC721EnumerableCollectible) {
         super._beforeTokenTransfer(from, to, tokenId);
     }
