@@ -12,7 +12,7 @@ abstract contract ERC721PresetCollectible is ERC721, ERC721EnumerableCollectible
 
     /// Variables ///
     bool internal _paused;
-    bool internal _isReserved;
+    bool internal _reserved;
     uint256 internal _tokenMaxSupply;
     uint256 internal _tokenPrice;
     uint256 internal _tokenMaxPerTxn;
@@ -84,7 +84,7 @@ abstract contract ERC721PresetCollectible is ERC721, ERC721EnumerableCollectible
     }
 
     function _reserveCollectibles() internal virtual {
-        require(!_isReserved, "Collectible: Tokens already reserved");
+        require(!_reserved, "Collectible: Tokens already reserved");
         require(availableSupply() > 0, "Collectible: Contract is sold out");
         require(availableSupply() >= _tokenMaxReserved, "Collectible: Qty exceeds available supply");
 
@@ -92,7 +92,7 @@ abstract contract ERC721PresetCollectible is ERC721, ERC721EnumerableCollectible
             _mintCollectible(msg.sender);
         }
 
-        _isReserved = true;
+        _reserved = true;
     }
 
     function _mintCollectible(address to) internal virtual {
