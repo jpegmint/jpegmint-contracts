@@ -113,7 +113,7 @@ abstract contract ERC721PresetCollectible is ERC721, ERC721EnumerableCollectible
     //================================================================================
 
     /**
-     * @dev Remind parent comtracts to implement withdrawal mechanism.
+     * @dev Remind parent contracts to implement withdrawal mechanism.
      */
     function withdraw() external virtual;
 
