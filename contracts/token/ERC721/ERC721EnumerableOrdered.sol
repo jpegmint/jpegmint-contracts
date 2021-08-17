@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.2;
+pragma solidity ^0.8.4;
 
 /// @author jpegmint.xyz
 
-import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 
@@ -13,10 +12,9 @@ import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
  * ordered nature of collectible tokenIds. Simple tokenId counter replaces
  * expensive mappings. Works only if tokens are not burnable!
  */
-abstract contract ERC721EnumerableCollectible is ERC721, IERC721Enumerable {
-    using Counters for Counters.Counter;
+abstract contract ERC721EnumerableOrdered is ERC721, IERC721Enumerable {
 
-    Counters.Counter private _tokenIdCounter;
+    uint256 private _tokenCounter;
 
     // Mapping from owner to list of owned token IDs
     mapping(address => mapping(uint256 => uint256)) private _ownedTokens;
@@ -47,7 +45,7 @@ abstract contract ERC721EnumerableCollectible is ERC721, IERC721Enumerable {
      * @dev See {IERC721Enumerable-totalSupply}.
      */
     function totalSupply() public view virtual override returns (uint256) {
-        return _tokenIdCounter.current();
+        return _tokenCounter;
     }
 
     /**
@@ -61,14 +59,6 @@ abstract contract ERC721EnumerableCollectible is ERC721, IERC721Enumerable {
     //================================================================================
     // Internal Functions
     //================================================================================
-
-    /**
-     * @dev TokenId generator to keep track of indexes. Starts at 1.
-     */
-    function _generateTokenId() internal returns (uint256) {
-        _tokenIdCounter.increment();
-        return _tokenIdCounter.current();
-    }
 
     /**
      * @dev Hook that is called before any token transfer. This includes minting
@@ -86,6 +76,7 @@ abstract contract ERC721EnumerableCollectible is ERC721, IERC721Enumerable {
      * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
      */
     function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual override {
+        _tokenCounter += 1;
         super._beforeTokenTransfer(from, to, tokenId);
 
         if (from != to && from != address(0)) {

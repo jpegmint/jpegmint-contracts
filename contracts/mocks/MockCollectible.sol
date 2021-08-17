@@ -5,41 +5,27 @@ pragma solidity ^0.8.2;
 /// @author jpegmint.xyz
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "../collectibles/ERC721PresetCollectible.sol";
+import "../collectibles/ERC721Collectible.sol";
 
-contract MockCollectible is ERC721PresetCollectible, Ownable {
+contract MockCollectible is Ownable, ERC721Collectible {
     using Strings for uint256;
 
     /**
-     * @dev Starts paused and initializes metadata.
+     * @dev Constructor allows dynamic edition sizing for mocking.
      */
     constructor(
         uint256 tokenMaxSupply,
         uint256 tokenPrice,
-        uint256 tokenMaxPerTxn,
-        uint256 tokenMaxReserved
-    ) ERC721PresetCollectible(
+        uint256 tokenMaxPerTxn
+    ) ERC721Collectible(
         "MockCollectible",
-        "MockCollectible",
+        "MOCKCOLLECTIBLE",
         tokenMaxSupply,
         tokenPrice,
-        tokenMaxPerTxn,
-        tokenMaxReserved
+        tokenMaxPerTxn
     ) {}
 
-    function startSale() external override onlyOwner {
-        _unpause();
-    }
-
-    function pauseSale() external override onlyOwner {
-        _pause();
-    }
-
-    function reserveCollectibles() external onlyOwner {
-        _reserveCollectibles();
-    }
-
-    function withdraw() external override onlyOwner {
-        _withdraw();
+    function mintCollectibles(uint256 howMany) external {
+        _purchase(howMany);
     }
 }
