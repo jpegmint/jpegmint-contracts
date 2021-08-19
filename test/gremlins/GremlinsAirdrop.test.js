@@ -4,11 +4,11 @@ const { ethers } = require("hardhat");
 
 /**
  */
-describe('GremlinsAirdrop', function () {
+describe.only('GremlinsAirdrop', function () {
 
     const CONTRACT_NAME = 'MockGremlinsAirdrop';
     const CONTRACT_SYMBOL = 'MOCKAIRDROP';
-    const TOKEN_MAX_SUPPLY = 75;
+    const TOKEN_MAX_SUPPLY = 10;
     const ROLE_ADMIN = ethers.utils.id('ADMIN_ROLE');
 
     before(async function () {
@@ -58,17 +58,17 @@ describe('GremlinsAirdrop', function () {
         });
 
         it('correctly mints in batches', async function() {
-            await this.contract.airdrop(this.wallets.slice(0, 25));
-            expect(await this.contract.totalSupply()).to.equal(25);
+            await this.contract.airdrop(this.wallets.slice(0, 4));
+            expect(await this.contract.totalSupply()).to.equal(4);
 
-            await this.contract.airdrop(this.wallets.slice(0, 25));
-            expect(await this.contract.totalSupply()).to.equal(50);
+            await this.contract.airdrop(this.wallets.slice(0, 4));
+            expect(await this.contract.totalSupply()).to.equal(8);
 
-            await this.contract.airdrop(this.wallets.slice(0, 25));
-            expect(await this.contract.totalSupply()).to.equal(75);
+            await this.contract.airdrop(this.wallets.slice(0, 2));
+            expect(await this.contract.totalSupply()).to.equal(10);
 
             expect(await this.contract.availableSupply()).to.equal(0);
-            expect(await this.contract.balanceOf(this.owner.address)).to.equal(75);
+            expect(await this.contract.balanceOf(this.owner.address)).to.equal(10);
         });
 
         it('correctly mints one at a time', async function() {
@@ -82,7 +82,7 @@ describe('GremlinsAirdrop', function () {
             erc721 = await factory.deploy('Mock', 'MOCK');
             await erc721.deployed();
 
-            let wallets = this.wallets.slice(0,74);
+            let wallets = this.wallets.slice(0,9);
             wallets.push(erc721.address);
             await this.contract.airdrop(wallets);
             expect(await this.contract.totalSupply()).to.equal(TOKEN_MAX_SUPPLY);
@@ -120,6 +120,35 @@ describe('GremlinsAirdrop', function () {
             expect(await this.contract.totalSupply()).to.equal(TOKEN_MAX_SUPPLY);
             expect(await this.contract.availableSupply()).to.equal(0);
             expect(await this.contract.balanceOf(this.owner.address)).to.equal(TOKEN_MAX_SUPPLY);
+        });
+    });
+
+    describe('randomization', function () {
+
+        const MOCK_MINT_ORDER = [7, 2, 4, 1, 8, 10, 6, 3, 5, 9];
+        const FORCED_MINT_ORDER = [9, 1, 7, 4, 10, 8, 3, 6, 5, 2];
+
+        it('correctly mints randomly and uniquely', async function() {
+            await this.contract.setBaseURI('/');
+            
+            for (let i = 0; i < TOKEN_MAX_SUPPLY; i++) {
+                await this.contract.airdrop([this.owner.address]);
+                let tokenId = MOCK_MINT_ORDER[i];
+                expect(await this.contract.tokenURI(tokenId)).to.equal('/' + tokenId);
+                expect(await this.contract.tokenByIndex(i)).to.equal(tokenId);
+            }
+        });
+
+        it('correctly mints if random is all the same number', async function() {
+            await this.contract.setBaseURI('/');
+            await this.contract.setSeedOverride(1);
+            
+            for (let i = 0; i < TOKEN_MAX_SUPPLY; i++) {
+                await this.contract.airdrop([this.owner.address]);
+                let tokenId = FORCED_MINT_ORDER[i];
+                expect(await this.contract.tokenURI(tokenId)).to.equal('/' + tokenId);
+                expect(await this.contract.tokenByIndex(i)).to.equal(tokenId);
+            }
         });
     });
 
