@@ -4,7 +4,7 @@ const { ethers } = require("hardhat");
 
 /**
  */
-describe.only('GremlinsAirdrop', function () {
+describe('GremlinsAirdrop', function () {
 
     const CONTRACT_NAME = 'MockGremlinsAirdrop';
     const CONTRACT_SYMBOL = 'MOCKAIRDROP';

@@ -28,6 +28,6 @@ module.exports = {
     apiKey: etherscanApiKey
   },
   gasReporter: {
-    enabled: false
+    enabled: true
   }
 };
