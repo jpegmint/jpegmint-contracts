@@ -1,4 +1,5 @@
 const { expect } = require('chai');
+const { ethers } = require('ethers');
 
 const INTERFACES = {
   ERC165: [
@@ -74,13 +75,33 @@ const INTERFACES = {
   ],
 };
 
+function ERC165(functionSignatures = []) {
+    const INTERFACE_ID_LENGTH = 4;
+
+    const interfaceIdBuffer = functionSignatures
+        .map(signature => ethers.utils.id(signature)) // keccak256
+        .map(h =>
+          Buffer
+            .from(h.substring(2), 'hex')
+            .slice(0, 4) // bytes4()
+        )
+        .reduce((memo, bytes) => {
+            for (let i = 0; i < INTERFACE_ID_LENGTH; i++) {
+                memo[i] = memo[i] ^ bytes[i]; // xor
+            }
+            return memo;
+        }, Buffer.alloc(INTERFACE_ID_LENGTH));
+
+    return `0x${interfaceIdBuffer.toString('hex')}`;
+}
+
 const INTERFACE_IDS = {};
 const FN_SIGNATURES = {};
 for (const k of Object.getOwnPropertyNames(INTERFACES)) {
-    INTERFACE_IDS[k] = ethers.utils.id(k);
+    INTERFACE_IDS[k] =  ERC165(INTERFACES[k]);
     for (const fnName of INTERFACES[k]) {
         // the interface id of a single function is equivalent to its function signature
-        FN_SIGNATURES[fnName] = ethers.utils.id(fnName);
+        FN_SIGNATURES[fnName] = ERC165([fnName]);
     }
 }
 
@@ -109,11 +130,12 @@ function shouldSupportInterfaces (interfaces = []) {
                         it('has to be implemented', function () {
                             const iface = this.contractUnderTest.interface;
                             const abi = iface.format(ethers.utils.FormatTypes.minimal);
+                            for (const fn of iface.fragments) {
+                                console.log(ethers.utils.Interface.getSighash(fn));
+                            }
                             
-                            expect(abi.filter(fn => {
-                                console.log(iface.getSighash(fn));
-                                return iface.getSighash(fn) === fnSig;
-                            }).length).to.equal(1);
+                            const filtered = abi.filter(function(fn) {
+                            });
                         });
                     });
                 }
