@@ -4,7 +4,7 @@ const { ethers } = require("hardhat");
 
 /**
  */
-describe.only('VirtualLoot', function () {
+describe('VirtualLoot', function () {
 
     const CONTRACT_NAME = 'VirtualLoot';
     const CONTRACT_SYMBOL = 'vLOOT';
