@@ -54,7 +54,7 @@ const fourthTokenId = 4;
 //     shouldBehaveLikeERC721Enumerable('ERC721');
 // });
 
-describe.only('MockERC721Lean', function () {
+describe('MockERC721Lean', function () {
 
     const CONTRACT_NAME = 'MockERC721Lean';
     const CONTRACT_SYMBOL = 'MockERC721Lean';

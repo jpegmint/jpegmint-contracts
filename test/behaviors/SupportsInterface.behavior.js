@@ -105,30 +105,34 @@ for (const k of Object.getOwnPropertyNames(INTERFACES)) {
     }
 }
 
-function shouldSupportInterfaces (interfaces = []) {
-    describe('Contract interface', function () {
-        beforeEach(function () {
-            this.contractUnderTest = this.mock || this.contract || this.holder || this.accessControl;
-        });
+const shouldSupportInterfaces = (contractFn, interfaces = []) => {
+
+    let contract;
+
+    beforeEach(() => {
+        contract = contractFn();
+    });
+
+    describe('Contract interface', () => {
 
         for (const k of interfaces) {
             const interfaceId = INTERFACE_IDS[k];
-            describe(k, function () {
-                describe('ERC165\'s supportsInterface(bytes4)', function () {
-                    it('uses less than 30k gas', async function () {
-                        expect(await this.contractUnderTest.estimateGas.supportsInterface(interfaceId)).to.be.lte(30000);
+            describe(k, () => {
+                describe('ERC165\'s supportsInterface(bytes4)', () => {
+                    it('uses less than 30k gas', async () => {
+                        expect(await contract.estimateGas.supportsInterface(interfaceId)).to.be.lte(30000);
                     });
 
-                    it('claims support', async function () {
-                        expect(await this.contractUnderTest.supportsInterface(interfaceId)).to.equal(true);
+                    it('claims support', async () => {
+                        expect(await contract.supportsInterface(interfaceId)).to.equal(true);
                     });
                 });
 
                 for (const fnName of INTERFACES[k]) {
                     const fnSig = FN_SIGNATURES[fnName];
-                    describe(fnName, function () {
-                        it('has to be implemented', function () {
-                            const abi = this.contractUnderTest.interface.functions;
+                    describe(fnName, () => {
+                        it('has to be implemented', () => {
+                            const abi = contract.interface.functions;
                             expect(Object.keys(abi).filter(fn => ERC165([fn]) === fnSig).length).to.equal(1);
                         });
                     });

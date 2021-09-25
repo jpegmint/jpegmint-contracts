@@ -3,31 +3,35 @@ require("@nomiclabs/hardhat-etherscan");
 require("@nomiclabs/hardhat-waffle");
 require("hardhat-gas-reporter");
 
-const { etherscanApiKey, alchemyApiKey, mnemonic } = require('./secrets.json');
+require('dotenv').config()
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
     solidity: {
-        version: "0.8.4",
-        settings: {
-            optimizer: {
-                enabled: true,
-                runs: 200
-            }
+    version: "0.8.7",
+    settings: {
+        optimizer: {
+        enabled: true,
+        runs: 200
         }
+    }
     },
     networks: {
         rinkeby: {
-            url: `https://eth-rinkeby.alchemyapi.io/v2/${alchemyApiKey}`,
-            accounts: {mnemonic: mnemonic}
+            url: `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
+            accounts: { mnemonic: process.env.MNEMONIC }
+        },
+        mainnet: {
+            url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+            accounts: { mnemonic: process.env.MNEMONIC }
         }
     },
     etherscan: {
-        apiKey: etherscanApiKey
+        apiKey: process.env.ETHERSCAN_API_KEY
     },
     gasReporter: {
-       enabled: true
+        enabled: true
     }
 };

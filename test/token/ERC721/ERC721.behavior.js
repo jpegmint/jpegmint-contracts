@@ -14,16 +14,19 @@ function shouldBehaveLikeERC721(errorPrefix) {
         'ERC721'
     ]);
 
+    beforeEach(function () {
+        this.owner = this.accounts[0];
+        this.newOwner = this.accounts[1];
+        this.approved = this.accounts[2];
+        this.anotherApproved = this.accounts[3];
+        this.operator = this.accounts[4];
+        this.other = this.accounts[5];
+        this.toWhom = this.other;
+    });
+
     context('with minted tokens', function () {
 
         beforeEach(async function () {
-            this.owner = this.accounts[0];
-            this.newOwner = this.accounts[1];
-            this.approved = this.accounts[2];
-            this.anotherApproved = this.accounts[3];
-            this.operator = this.accounts[4];
-            this.other = this.accounts[5];
-            this.toWhom = this.other;
             await this.contract.mint(this.owner.address, firstTokenId);
             await this.contract.mint(this.owner.address, secondTokenId);
         });
@@ -74,7 +77,7 @@ function shouldBehaveLikeERC721(errorPrefix) {
             });
         });
 
-        describe.only('transfers', function () {
+        describe('transfers', function () {
             const tokenId = firstTokenId;
             const data = '0x42';
       
@@ -224,7 +227,7 @@ function shouldBehaveLikeERC721Enumerable(errorPrefix) {
                     .to.be.revertedWith('ERC721Enumerable: global index out of bounds')
                 ;
             });
-        });  
+        });
     });
 };
 
