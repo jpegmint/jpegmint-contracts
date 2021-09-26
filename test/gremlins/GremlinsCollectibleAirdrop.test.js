@@ -38,13 +38,6 @@ describe('GremlinsCollectibleAirdrop', function () {
         });
     });
 
-    describe('ownable', function () {
-        
-        it('has an owner', async function () {
-            expect(await this.contract.owner()).to.equal(this.owner.address);
-        });
-    });
-
     describe('hasRole', function () {
 
         it('correctly sets admin roles', async function () {

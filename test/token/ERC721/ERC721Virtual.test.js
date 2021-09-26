@@ -2,45 +2,47 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
+const { shouldSupportInterfaces } = require('../../behaviors/SupportsInterface.behavior');
+const { shouldBehaveLikeERC721 } = require('../../behaviors/ERC721.behavior');
+const { shouldBehaveLikeERC721Metadata } = require('../../behaviors/ERC721Metadata.behavior');
+const { shouldBehaveLikeERC721Enumerable } = require('../../behaviors/ERC721Enumerable.behavior');
+
 /**
  */
-describe('VirtualLoot', function () {
+describe('ERC721Virtual', () =>  {
 
-    const CONTRACT_NAME = 'VirtualLoot';
-    const CONTRACT_SYMBOL = 'vLOOT';
+    const CONTRACT_NAME = 'MockERC721Virtual';
+    const CONTRACT_SYMBOL = 'MockERC721Virtual';
 
-    before(async function () {
-        [this.owner, this.addr1, this.gnosis, this.owner1, this.owner2] = await ethers.getSigners();
+    let factory;
+    let contract;
+    let accounts, owner, newOwner, approved, operator, other;
 
+    beforeEach(async () => {
+        factory = await ethers.getContractFactory(CONTRACT_NAME);
+        contract = await factory.deploy();
+        await contract.deployed();
+        
+        accounts = await ethers.getSigners();
+        [ owner, newOwner, approved, operator, other ] = accounts;
     });
 
-    beforeEach(async function () {
-        this.factory = await ethers.getContractFactory(CONTRACT_NAME);
-        this.contract = await this.factory.deploy();
-        await this.contract.deployed();
+    shouldSupportInterfaces(() => contract, ['ERC165', 'ERC721', 'ERC721Enumerable']);
+
+    describe('ERC721Metadata', () => {
+        shouldBehaveLikeERC721Metadata(() => [ contract, accounts ], CONTRACT_NAME, CONTRACT_SYMBOL);
     });
 
-    describe('initialization', function () {
+    describe('minting', () =>  {
 
-        it('correctly sets the name', async function () {
-            expect(await this.contract.name()).to.equal(CONTRACT_NAME);
-        });
-
-        it('correctly sets the symbol', async function () {
-            expect(await this.contract.symbol()).to.equal(CONTRACT_SYMBOL);
-        });
-    });
-
-    describe('minting', function () {
-
-        it('correctly mints', async function () {
+        it('correctly mints', async () =>  {
             
-            await this.contract.mintLoot();
+            await contract.mint();
 
-            let filter = await this.contract.filters.Transfer();
+            let filter = await contract.filters.Transfer();
             let logs = await ethers.provider.getLogs(filter);
             logs.forEach((log) => {
-                let logDescription = this.contract.interface.parseLog(log);
+                let logDescription = contract.interface.parseLog(log);
                 console.log(logDescription);
             });
 

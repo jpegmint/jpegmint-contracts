@@ -413,7 +413,7 @@ contract ERC721Lean is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumera
      */
     function tokenByIndex(uint256 index) public view virtual override returns (uint256) {
         uint256 tokenId = index + 1;
-        require(_exists(tokenId), "ERC721Enumerable: token at index not minted");
+        require(_exists(tokenId), "ERC721Enumerable: global index out of bounds");
         return tokenId;
     }
 

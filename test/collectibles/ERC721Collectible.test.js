@@ -2,6 +2,11 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
+const { shouldBehaveLikeERC721 } = require('../behaviors/ERC721.behavior');
+const { shouldBehaveLikeOwnable } = require('../behaviors/Ownable.behavior');
+const { shouldBehaveLikeERC721Metadata } = require('../behaviors/ERC721Metadata.behavior');
+const { shouldBehaveLikeERC721Enumerable } = require('../behaviors/ERC721Enumerable.behavior');
+
 /**
  */
 describe('ERC721Collectible', function () {
@@ -12,67 +17,91 @@ describe('ERC721Collectible', function () {
     const TOKEN_PRICE = 0;
     const TOKEN_MAX_PER_TXN = 10;
 
-    before(async function () {
-        [this.owner, this.addr1, this.gnosis, this.owner1, this.owner2] = await ethers.getSigners();
+    let factory;
+    let contract;
+    let accounts, owner, newOwner, approved, operator, other;
 
-        this.factory = await ethers.getContractFactory("MockCollectible");
+    beforeEach(async () => {
+        factory = await ethers.getContractFactory(CONTRACT_NAME);
+        contract = await factory.deploy(TOKEN_MAX_SUPPLY, TOKEN_PRICE, TOKEN_MAX_PER_TXN);
+        await contract.deployed();
+        
+        accounts = await ethers.getSigners();
+        [ owner, newOwner, approved, operator, other ] = accounts;
     });
 
-    beforeEach(async function () {
-        this.contract = await this.factory.deploy(TOKEN_MAX_SUPPLY, TOKEN_PRICE, TOKEN_MAX_PER_TXN);
-        await this.contract.deployed();
+    describe('Ownable', () => {
+        shouldBehaveLikeOwnable(() => [ contract, accounts ]);
+    });
+
+    describe('ERC721Metadata', () => {
+        shouldBehaveLikeERC721Metadata(() => [ contract, accounts ], CONTRACT_NAME, CONTRACT_SYMBOL);
+    });
+
+    describe('ERC721', () => {
+
+        let firstTokenId, secondTokenId;
+
+        beforeEach(async () => {
+            await contract.startSale();
+            await contract.mintCollectibles(2);
+            firstTokenId = (await contract.tokenOfOwnerByIndex(owner.address, 0)).toNumber();
+            secondTokenId = (await contract.tokenOfOwnerByIndex(owner.address, 1)).toNumber();
+        });
+
+        shouldBehaveLikeERC721(() => [ contract, accounts, firstTokenId, secondTokenId, 100 ]);
+    });
+
+    describe('ERC721enumerable', () => {
+
+        beforeEach(async () => {
+            await contract.startSale();
+            await contract.mintCollectibles(2);
+            firstTokenId = (await contract.tokenOfOwnerByIndex(owner.address, 0)).toNumber();
+            secondTokenId = (await contract.tokenOfOwnerByIndex(owner.address, 1)).toNumber();
+        });
+
+        shouldBehaveLikeERC721Enumerable(() => [ contract, accounts, firstTokenId, secondTokenId, 100 ]);
     });
 
     describe('initialization', function () {
 
-        it('correctly sets the name', async function () {
-            expect(await this.contract.name()).to.equal(CONTRACT_NAME);
-        });
-
-        it('correctly sets the symbol', async function () {
-            expect(await this.contract.symbol()).to.equal(CONTRACT_SYMBOL);
-        });
-
-        it('correctly sets owner', async function () {
-            expect(await this.contract.owner()).to.equal(this.owner.address);
-        });
-
         it('correctly starts paused', async function () {
-            expect(await this.contract.isPaused()).to.be.true;
+            expect(await contract.isPaused()).to.be.true;
         });
 
         it('correctly starts with max supply', async function () {
-            expect(await this.contract.totalSupply()).to.equal(0);
-            expect(await this.contract.availableSupply()).to.equal(TOKEN_MAX_SUPPLY);
+            expect(await contract.totalSupply()).to.equal(0);
+            expect(await contract.availableSupply()).to.equal(TOKEN_MAX_SUPPLY);
         });
     });
 
     describe('minting', function () {
 
         it('correctly mints', async function () {
-            await this.contract.startSale();
-            await this.contract.mintCollectibles(1);
+            await contract.startSale();
+            await contract.mintCollectibles(1);
             
-            expect(await this.contract.availableSupply()).to.equal(TOKEN_MAX_SUPPLY - 1);
+            expect(await contract.availableSupply()).to.equal(TOKEN_MAX_SUPPLY - 1);
         });
     });
 
     describe('enumerable', function () {
 
         it('correctly tracks totalSupply', async function () {
-            await this.contract.startSale();
-            expect(await this.contract.totalSupply()).to.equal(0);
-            expect(await this.contract.availableSupply()).to.equal(TOKEN_MAX_SUPPLY);
+            await contract.startSale();
+            expect(await contract.totalSupply()).to.equal(0);
+            expect(await contract.availableSupply()).to.equal(TOKEN_MAX_SUPPLY);
 
             for (var i = 0; i < TOKEN_MAX_SUPPLY; i++) {
-                await this.contract.mintCollectibles(1);
-                expect(await this.contract.totalSupply()).to.equal(i + 1);
-                expect(await this.contract.availableSupply()).to.equal(TOKEN_MAX_SUPPLY - i - 1);
+                await contract.mintCollectibles(1);
+                expect(await contract.totalSupply()).to.equal(i + 1);
+                expect(await contract.availableSupply()).to.equal(TOKEN_MAX_SUPPLY - i - 1);
             }
 
-            expect(this.contract.mintCollectibles(1)).to.be.reverted;
-            expect(await this.contract.totalSupply()).to.equal(TOKEN_MAX_SUPPLY);
-            expect(await this.contract.availableSupply()).to.equal(0);
+            expect(contract.mintCollectibles(1)).to.be.reverted;
+            expect(await contract.totalSupply()).to.equal(TOKEN_MAX_SUPPLY);
+            expect(await contract.availableSupply()).to.equal(0);
         });
     });
 });

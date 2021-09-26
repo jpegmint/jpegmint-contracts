@@ -1,5 +1,5 @@
 const { expect } = require("chai");
-const { shouldSupportInterfaces } = require('../behaviors/SupportsInterface.behavior');
+const { shouldSupportInterfaces } = require('./SupportsInterface.behavior');
 
 const shouldBehaveLikeERC721 = (contractFn, accountsFn) => {
 

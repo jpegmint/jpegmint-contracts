@@ -11,7 +11,7 @@ contract MockERC721 is ERC721, Ownable {
     
     constructor() ERC721("MockERC721", "MockERC721") {}
 
-    function mint(address to, uint16 tokenId) public onlyOwner {
+    function mint(address to, uint256 tokenId) public onlyOwner {
         _mint(to, tokenId);
     }
 }
