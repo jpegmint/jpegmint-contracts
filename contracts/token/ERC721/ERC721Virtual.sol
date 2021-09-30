@@ -89,8 +89,16 @@ contract ERC721Virtual is ERC721, IERC721Enumerable {
 
         emit Transfer(owner, address(0), tokenId);
     }
+
+    function transferFrom(address, address, uint256) public virtual override(ERC721, IERC721) {
+        revert("ERC721Virtual: Virtual tokens can not be transferred");
+    }
+
+    function safeTransferFrom(address, address, uint256) public virtual override(ERC721, IERC721) {
+        revert("ERC721Virtual: Virtual tokens can not be transferred");
+    }
     
-    function _transfer(address, address, uint256) internal virtual override {
+    function safeTransferFrom(address, address, uint256, bytes memory) public virtual override(ERC721, IERC721) {
         revert("ERC721Virtual: Virtual tokens can not be transferred");
     }
 
