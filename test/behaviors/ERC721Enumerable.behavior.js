@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 const { shouldSupportInterfaces } = require('./SupportsInterface.behavior');
 
-const shouldBehaveLikeERC721Enumerable = (contractFn, accountsFn) => {
+const shouldBehaveLikeERC721Enumerable = (contractFn) => {
 
     let contract, accounts, owner, newOwner, approved, operator, other;
     let firstTokenId, secondTokenId, nonExistentTokenId;
