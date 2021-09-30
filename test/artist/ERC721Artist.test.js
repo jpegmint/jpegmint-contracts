@@ -8,7 +8,7 @@ const { shouldBehaveLikeERC721Metadata } = require('../behaviors/ERC721Metadata.
 const { shouldBehaveLikeERC721Royalties } = require('../behaviors/ERC721Royalties.behavior');
 const { shouldBehaveLikeERC721Enumerable } = require('../behaviors/ERC721Enumerable.behavior');
 
-describe.only('ERC721Artist', () => {
+describe('ERC721Artist', () => {
 
     const CONTRACT_NAME = 'MockERC721Artist';
     const CONTRACT_SYMBOL = 'MockERC721Artist';
