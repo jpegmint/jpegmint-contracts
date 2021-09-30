@@ -38,6 +38,19 @@ const INTERFACES = {
         'onERC1155Received(address,address,uint256,uint256,bytes)',
         'onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)',
     ],
+    RoyaltiesERC2981: [
+        'royaltyInfo(uint256,uint256)'
+    ],
+    RoyaltiesFoundation: [
+        'getFees(uint256)'
+    ],
+    RoyaltiesRaribleV1: [
+        'getFeeRecipients(uint256)',
+        'getFeeBps(uint256)'
+    ],
+    RoyaltiesRaribleV2: [
+        'getRoyalties(uint256)'
+    ],
     AccessControl: [
         'hasRole(bytes32,address)',
         'getRoleAdmin(bytes32)',
