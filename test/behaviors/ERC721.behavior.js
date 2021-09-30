@@ -3,7 +3,7 @@ const { shouldSupportInterfaces } = require('./SupportsInterface.behavior');
 
 const shouldBehaveLikeERC721 = (contractFn, accountsFn) => {
 
-    let contract, accounts, owner, newOwner, approved, operator, other;
+    let contract, accounts, owner, newOwner, approved, operator, other, toWhom;
     let firstTokenId, secondTokenId, nonExistentTokenId;
 
     beforeEach(() => {
