@@ -3,7 +3,7 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
 const { shouldBehaveLikeERC721 } = require('../behaviors/ERC721.behavior');
-const { shouldBehaveLikeOwnable } = require('../behaviors/Ownable.behavior');
+const { shouldBehaveLikeMultiOwnable } = require('../behaviors/MultiOwnable.behavior');
 const { shouldBehaveLikeERC721Metadata } = require('../behaviors/ERC721Metadata.behavior');
 const { shouldBehaveLikeERC721Royalties } = require('../behaviors/ERC721Royalties.behavior');
 const { shouldBehaveLikeERC721Enumerable } = require('../behaviors/ERC721Enumerable.behavior');
@@ -25,8 +25,8 @@ describe('ERC721Artist', () => {
         [ owner, newOwner, approved, operator, other ] = accounts;
     });
 
-    describe('Ownable', () => {
-        shouldBehaveLikeOwnable(() => [ contract, accounts ]);
+    describe('MultiOwnable', () => {
+        shouldBehaveLikeMultiOwnable(() => [ contract, accounts ]);
     });
 
     describe('ERC721Metadata', () => {
