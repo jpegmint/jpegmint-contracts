@@ -44,11 +44,11 @@ const INTERFACES = {
     RoyaltiesFoundation: [
         'getFees(uint256)'
     ],
-    RoyaltiesRaribleV1: [
+    RoyaltiesRarible: [
         'getFeeRecipients(uint256)',
         'getFeeBps(uint256)'
     ],
-    RoyaltiesRaribleV2: [
+    RoyaltiesCreatorCore: [
         'getRoyalties(uint256)'
     ],
     AccessControl: [

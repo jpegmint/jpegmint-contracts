@@ -10,7 +10,7 @@ const shouldBehaveLikeERC721Royalties = (contractFn) => {
         [ owner, newOwner, approved, operator, other, royalties] = accounts;
     });
 
-    shouldSupportInterfaces(() => contract, ['RoyaltiesERC2981', 'RoyaltiesFoundation', 'RoyaltiesRaribleV1', 'RoyaltiesRaribleV2']);
+    shouldSupportInterfaces(() => contract, ['RoyaltiesERC2981', 'RoyaltiesFoundation', 'RoyaltiesRarible', 'RoyaltiesCreatorCore']);
 
     const royaltiesCorrectOnSale = (royaltiesFn) => {
 

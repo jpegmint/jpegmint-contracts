@@ -7,10 +7,10 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "./IRoyaltiesERC2981.sol";
 import "./IRoyaltiesFoundation.sol";
-import "./IRoyaltiesRaribleV1.sol";
-import "./IRoyaltiesRaribleV2.sol";
+import "./IRoyaltiesRarible.sol";
+import "./IRoyaltiesCreatorCore.sol";
 
-abstract contract ERC721Royalties is ERC721, IRoyaltiesERC2981, IRoyaltiesRaribleV2, IRoyaltiesFoundation, IRoyaltiesRaribleV1 {
+abstract contract ERC721Royalties is ERC721, IRoyaltiesERC2981, IRoyaltiesCreatorCore, IRoyaltiesFoundation, IRoyaltiesRarible {
 
     address private _royaltiesRecipient;
     uint256 private _royaltiesBasisPoints;
@@ -21,8 +21,8 @@ abstract contract ERC721Royalties is ERC721, IRoyaltiesERC2981, IRoyaltiesRaribl
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
         return
             interfaceId == type(IRoyaltiesERC2981).interfaceId ||
-            interfaceId == type(IRoyaltiesRaribleV1).interfaceId ||
-            interfaceId == type(IRoyaltiesRaribleV2).interfaceId ||
+            interfaceId == type(IRoyaltiesRarible).interfaceId ||
+            interfaceId == type(IRoyaltiesCreatorCore).interfaceId ||
             interfaceId == type(IRoyaltiesFoundation).interfaceId ||
             super.supportsInterface(interfaceId)
         ;
@@ -37,7 +37,7 @@ abstract contract ERC721Royalties is ERC721, IRoyaltiesERC2981, IRoyaltiesRaribl
     }
 
     /**
-     * @dev See {IRoyaltiesRaribleV2-getRoyalties}.
+     * @dev See {IRoyaltiesCreatorCore-getRoyalties}.
      */
     function getRoyalties(uint256 tokenId) public view override returns (address payable[] memory, uint256[] memory) {
         require(_exists(tokenId), "Nonexistent token");
