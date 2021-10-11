@@ -13,8 +13,7 @@ import "@openzeppelin/contracts/interfaces/IERC721Enumerable.sol";
 
 /**
  * @dev Implementation of https://eips.ethereum.org/EIPS/eip-721[ERC721] Non-Fungible Token Standard, including
- * the Metadata extension, but not including the Enumerable extension, which is available separately as
- * {ERC721Enumerable}.
+ * the Metadata and Enumerable extensions. Gas-optimized for ordered token ID collections.
  */
 contract ERC721Lean is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumerable {
     using Address for address;
@@ -98,7 +97,7 @@ contract ERC721Lean is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumera
      * @dev See {IERC721Metadata-tokenURI}.
      */
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+        require(_exists(uint16(tokenId)), "ERC721Metadata: URI query for nonexistent token");
 
         string memory baseURI = _baseURI();
         return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString())) : "";
@@ -132,7 +131,7 @@ contract ERC721Lean is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumera
      * @dev See {IERC721-getApproved}.
      */
     function getApproved(uint256 tokenId) public view virtual override returns (address) {
-        require(_exists(tokenId), "ERC721: approved query for nonexistent token");
+        require(_exists(uint16(tokenId)), "ERC721: approved query for nonexistent token");
 
         return _tokenApprovals[uint16(tokenId)];
     }
@@ -163,7 +162,7 @@ contract ERC721Lean is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumera
         uint256 tokenId
     ) public virtual override {
         //solhint-disable-next-line max-line-length
-        require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
+        require(_isApprovedOrOwner(_msgSender(), uint16(tokenId)), "ERC721: transfer caller is not owner nor approved");
 
         _transfer(from, to, uint16(tokenId));
     }
@@ -188,7 +187,7 @@ contract ERC721Lean is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumera
         uint256 tokenId,
         bytes memory _data
     ) public virtual override {
-        require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
+        require(_isApprovedOrOwner(_msgSender(), uint16(tokenId)), "ERC721: transfer caller is not owner nor approved");
         _safeTransfer(from, to, uint16(tokenId), _data);
     }
 
@@ -228,8 +227,8 @@ contract ERC721Lean is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumera
      * Tokens start existing when they are minted (`_mint`),
      * and stop existing when they are burned (`_burn`).
      */
-    function _exists(uint256 tokenId) internal view virtual returns (bool) {
-        return _owners[uint16(tokenId)] != address(0);
+    function _exists(uint16 tokenId) internal view virtual returns (bool) {
+        return _owners[tokenId] != address(0);
     }
 
     /**
@@ -239,7 +238,7 @@ contract ERC721Lean is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumera
      *
      * - `tokenId` must exist.
      */
-    function _isApprovedOrOwner(address spender, uint256 tokenId) internal view virtual returns (bool) {
+    function _isApprovedOrOwner(address spender, uint16 tokenId) internal view virtual returns (bool) {
         require(_exists(tokenId), "ERC721: operator query for nonexistent token");
         address owner = ownerOf(tokenId);
         return (spender == owner || getApproved(tokenId) == spender || isApprovedForAll(owner, spender));
@@ -412,11 +411,14 @@ contract ERC721Lean is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumera
      * @dev See {IERC721Enumerable-tokenByIndex}.
      */
     function tokenByIndex(uint256 index) public view virtual override returns (uint256) {
-        uint256 tokenId = index + 1;
+        uint16 tokenId = uint16(index + 1);
         require(_exists(tokenId), "ERC721Enumerable: global index out of bounds");
         return tokenId;
     }
 
+    /**
+     * @dev Returns all the owned tokens by owner address.
+     */
     function walletOfOwner(address owner) public view returns (uint16[] memory) {
         return _ownedTokens[owner];
     }
@@ -476,7 +478,7 @@ contract ERC721Lean is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumera
      * @param from address representing the previous owner of the given token ID
      * @param tokenId uint256 ID of the token to be removed from the tokens list of the given address
      */
-    function _removeTokenFromOwnerEnumeration(address from, uint256 tokenId) private {
+    function _removeTokenFromOwnerEnumeration(address from, uint16 tokenId) private {
         // To prevent a gap in from's tokens array, we store the last token in the index of the token to delete, and
         // then delete the last slot (swap and pop).
 
