@@ -88,7 +88,7 @@ const shouldBehaveLikeERC721Enumerable = (contractFn) => {
             });
         
             it('reverts if index is greater than supply', async () => {
-                await expect(contract.tokenByIndex(2))
+                await expect(contract.tokenByIndex(30000))
                     .to.be.revertedWith('ERC721Enumerable: global index out of bounds')
                 ;
             });
