@@ -1,6 +1,6 @@
 {
   "name": "@jpegmint/jpegmint-solidity",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "Smart Contract libraries for Solidity",
   "scripts": {
     "test": "hardhat test"
