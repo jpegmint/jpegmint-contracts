@@ -53,7 +53,7 @@ describe('ERC721Artist', () => {
         shouldBehaveLikeERC721Royalties(() => [ contract, accounts ]);
     });
 
-    describe('ERC721enumerable', () => {
+    describe('ERC721Enumerable', () => {
 
         beforeEach(async () => {
             await contract.mint(owner.address, 1, 'uri1');
