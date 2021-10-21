@@ -18,6 +18,11 @@ contract ERC721Artist is ERC721, ERC721Royalties, MultiOwnable {
     /// CONSTRUCTOR ///
     constructor(string memory name, string memory symbol) ERC721(name, symbol) {}
 
+    /// ERC165 INTERFACES ///
+    function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC721Royalties, MultiOwnable) returns (bool) {
+        return super.supportsInterface(interfaceId);
+    }
+
     //   __  __ _____ _   _ _______ _____ _   _  _____ 
     //  |  \/  |_   _| \ | |__   __|_   _| \ | |/ ____|
     //  | \  / | | | |  \| |  | |    | | |  \| | |  __ 
@@ -117,12 +122,5 @@ contract ERC721Artist is ERC721, ERC721Royalties, MultiOwnable {
      */
     function setRoyalties(address recipient, uint256 basisPoints) public override onlyOwner {
         _setRoyalties(recipient, basisPoints);
-    }
-
-    /**
-     * @dev see {IERC165-supportsInterface}
-     */
-    function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC721Royalties, MultiOwnable) returns (bool) {
-        return super.supportsInterface(interfaceId);
     }
 }
