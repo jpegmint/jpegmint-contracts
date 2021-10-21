@@ -4,22 +4,33 @@ pragma solidity ^0.8.4;
 
 /// @author jpegmint.xyz
 
+import "./IOwnable.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
-abstract contract MultiOwnable is Context {
+abstract contract MultiOwnable is Context, IOwnable, ERC165 {
 
     /// VARIABLES ///
     address[] private _owners;
-    mapping(address => uint256) private _ownersIndex;
 
-    /// EVENTS ///
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    /// MAPPINGS ///
+    mapping(address => uint256) private _ownersIndex;
     
     /**
      * @dev Initializes the contract setting the deployer as the initial owner.
      */
     constructor() {
         _pushOwner(_msgSender());
+    }
+
+    /**
+     * @dev see {IERC165-supportsInterface}
+     */
+    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+        return
+            interfaceId == type(IOwnable).interfaceId ||
+            super.supportsInterface(interfaceId)
+        ;
     }
 
     /**
@@ -33,7 +44,7 @@ abstract contract MultiOwnable is Context {
     /**
      * @dev Returns the address of the first owner.
      */
-    function owner() public view virtual returns (address) {
+    function owner() public view virtual override returns (address) {
         return _owners.length > 0 ? _owners[0] : address(0);
     }
 
@@ -90,13 +101,15 @@ abstract contract MultiOwnable is Context {
      * @dev Leaves the contract without owner. It will not be possible to call
      * `onlyOwner` functions anymore. Can only be called by the current owner.
      */
-    function renounceOwnership() public virtual onlyOwner {
+    function renounceOwnership() public virtual override onlyOwner {
 
         address oldOwner = owner();
 
         for (uint256 i = 0; i < _owners.length; i++) {
-            _removeOwner(_owners[i]);
+            delete _ownersIndex[_owners[i]];
         }
+
+        delete _owners;
 
         emit OwnershipTransferred(oldOwner, address(0));
     }
@@ -105,7 +118,7 @@ abstract contract MultiOwnable is Context {
      * @dev Transfers primary ownership of the contract to specified address.
      * Can only be called by the current owner.
      */
-    function transferOwnership(address newOwner) public virtual onlyOwner {
+    function transferOwnership(address newOwner) public virtual override onlyOwner {
         require(newOwner != address(0), "Ownable: new owner is the zero address");
 
         address oldOwner = _owners[0];

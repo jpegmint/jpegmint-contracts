@@ -3,7 +3,6 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
 const { shouldBehaveLikeERC721 } = require('../behaviors/ERC721.behavior');
-const { shouldSupportInterfaces } = require('../behaviors/SupportsInterface.behavior');
 const { shouldBehaveLikeERC721Metadata } = require('../behaviors/ERC721Metadata.behavior');
 const { shouldBehaveLikeERC721Royalties } = require('../behaviors/ERC721Royalties.behavior');
 

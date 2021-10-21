@@ -51,6 +51,11 @@ const INTERFACES = {
     RoyaltiesCreatorCore: [
         'getRoyalties(uint256)'
     ],
+    Ownable: [
+        'owner()',
+        'renounceOwnership()',
+        'transferOwnership(address)',
+    ],
     AccessControl: [
         'hasRole(bytes32,address)',
         'getRoleAdmin(bytes32)',

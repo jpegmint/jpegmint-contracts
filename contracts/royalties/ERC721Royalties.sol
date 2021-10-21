@@ -4,13 +4,11 @@ pragma solidity ^0.8.4;
 
 /// @author jpegmint.xyz
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol"; 
 import "./IRoyaltiesERC2981.sol";
-import "./IRoyaltiesFoundation.sol";
-import "./IRoyaltiesRarible.sol";
 import "./IRoyaltiesCreatorCore.sol";
 
-abstract contract ERC721Royalties is ERC721, IRoyaltiesERC2981, IRoyaltiesCreatorCore, IRoyaltiesFoundation, IRoyaltiesRarible {
+abstract contract ERC721Royalties is ERC721, IRoyaltiesERC2981, IRoyaltiesCreatorCore {
 
     address private _royaltiesRecipient;
     uint256 private _royaltiesBasisPoints;
@@ -21,9 +19,7 @@ abstract contract ERC721Royalties is ERC721, IRoyaltiesERC2981, IRoyaltiesCreato
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
         return
             interfaceId == type(IRoyaltiesERC2981).interfaceId ||
-            interfaceId == type(IRoyaltiesRarible).interfaceId ||
             interfaceId == type(IRoyaltiesCreatorCore).interfaceId ||
-            interfaceId == type(IRoyaltiesFoundation).interfaceId ||
             super.supportsInterface(interfaceId)
         ;
     }
@@ -39,33 +35,9 @@ abstract contract ERC721Royalties is ERC721, IRoyaltiesERC2981, IRoyaltiesCreato
     /**
      * @dev See {IRoyaltiesCreatorCore-getRoyalties}.
      */
-    function getRoyalties(uint256 tokenId) public view override returns (address payable[] memory, uint256[] memory) {
+    function getRoyalties(uint256 tokenId) external view override returns (address payable[] memory, uint256[] memory) {
         require(_exists(tokenId), "Nonexistent token");
         return _getRoyalties(tokenId);
-    }
-
-    /**
-     * @dev See {IRoyaltiesFoundation-getFees}.
-     */
-    function getFees(uint256 tokenId) public view override returns (address payable[] memory, uint256[] memory) {
-        require(_exists(tokenId), "Nonexistent token");
-        return _getRoyalties(tokenId);
-    }
-
-    /**
-     * @dev See {IRoyaltiesRaribleV1-getFeeBps}.
-     */
-    function getFeeBps(uint256 tokenId) public view override returns (uint[] memory) {
-        require(_exists(tokenId), "Nonexistent token");
-        return _getRoyaltyBasisPoints(tokenId);
-    }
-
-    /**
-     * @dev See {IRoyaltiesRaribleV1-getFeeRecipients}.
-     */
-    function getFeeRecipients(uint256 tokenId) public view override returns (address payable[] memory) {
-        require(_exists(tokenId), "Nonexistent token");
-        return _getRoyaltyReceivers(tokenId);
     }
 
     /**
@@ -83,13 +55,6 @@ abstract contract ERC721Royalties is ERC721, IRoyaltiesERC2981, IRoyaltiesCreato
     }
 
     /**
-     * @dev Returns contract-wide royalties.
-     */
-    function _getRoyalties(uint256 tokenId) internal view returns (address payable[] memory, uint256[] memory) {
-        return (_getRoyaltyReceivers(tokenId), _getRoyaltyBasisPoints(tokenId));
-    }
-
-    /**
      * @dev Calculates royalties using contract-wide setting.
      */
     function _getRoyaltyInfo(uint256, uint256 value) internal view returns (address, uint256) {
@@ -98,20 +63,16 @@ abstract contract ERC721Royalties is ERC721, IRoyaltiesERC2981, IRoyaltiesCreato
     }
 
     /**
-     * @dev Returns contract-wide royalty receiver.
+     * @dev Returns contract-wide royalties.
      */
-    function _getRoyaltyReceivers(uint256) internal view returns (address payable[] memory) {
-        address payable[] memory royaltyReceivers = new address payable[](1);
-        royaltyReceivers[0] = payable(_royaltiesRecipient);
-        return royaltyReceivers;
-    }
+    function _getRoyalties(uint256) internal view returns (address payable[] memory, uint256[] memory) {
 
-    /**
-     * @dev Returns contract-wide royalty basis points.
-     */
-    function _getRoyaltyBasisPoints(uint256) internal view returns (uint256[] memory) {
-        uint[] memory royaltyBasisPoints = new uint[](1);
+        uint256[] memory royaltyBasisPoints = new uint[](1);
+        address payable[] memory royaltyReceivers = new address payable[](1);
+
         royaltyBasisPoints[0] = _royaltiesBasisPoints;
-        return royaltyBasisPoints;
+        royaltyReceivers[0] = payable(_royaltiesRecipient);
+
+        return (royaltyReceivers, royaltyBasisPoints);
     }
 }

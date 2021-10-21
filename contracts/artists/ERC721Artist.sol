@@ -6,15 +6,26 @@ pragma solidity ^0.8.4;
 
 import "../access/MultiOwnable.sol";
 import "../royalties/ERC721Royalties.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
-contract ERC721Artist is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Royalties, MultiOwnable {
+contract ERC721Artist is ERC721, ERC721Royalties, MultiOwnable {
+
+    /// VARIABLES ///
+    uint256 public totalSupply;
     
+    mapping(uint256 => string) private _tokenURIs;
+    
+    /// CONSTRUCTOR ///
     constructor(string memory name, string memory symbol) ERC721(name, symbol) {}
 
+    //   __  __ _____ _   _ _______ _____ _   _  _____ 
+    //  |  \/  |_   _| \ | |__   __|_   _| \ | |/ ____|
+    //  | \  / | | | |  \| |  | |    | | |  \| | |  __ 
+    //  | |\/| | | | | . ` |  | |    | | | . ` | | |_ |
+    //  | |  | |_| |_| |\  |  | |   _| |_| |\  | |__| |
+    //  |_|  |_|_____|_| \_|  |_|  |_____|_| \_|\_____|
+    //                                                
+                                         
     /**
      * @dev Mint a token.
      *
@@ -29,6 +40,8 @@ contract ERC721Artist is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Royal
         if (bytes(uri).length > 0) {
             _setTokenURI(tokenId, uri);
         }
+
+        totalSupply++;
     }
 
     /**
@@ -38,21 +51,30 @@ contract ERC721Artist is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Royal
      */
     function burn(uint256 tokenId) public virtual {
         require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721Burnable: caller is not owner nor approved");
+        
         _burn(tokenId);
+        
+        if (bytes(_tokenURIs[tokenId]).length != 0) {
+            delete _tokenURIs[tokenId];
+        }
+
+        totalSupply--;
     }
+ 
+    //   __  __ ______ _______       _____       _______       
+    //  |  \/  |  ____|__   __|/\   |  __ \   /\|__   __|/\    
+    //  | \  / | |__     | |  /  \  | |  | | /  \  | |  /  \   
+    //  | |\/| |  __|    | | / /\ \ | |  | |/ /\ \ | | / /\ \  
+    //  | |  | | |____   | |/ ____ \| |__| / ____ \| |/ ____ \ 
+    //  |_|  |_|______|  |_/_/    \_\_____/_/    \_\_/_/    \_\
+    //
 
     /**
-     * @dev see {ERC721-_burn}
+     * @dev See {IERC721Metadata-tokenURI}.
      */
-    function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
-        super._burn(tokenId);
-    }
-
-    /**
-     * @dev see {ERC721URIStorage-tokenURI}
-     */
-    function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
-        return super.tokenURI(tokenId);
+    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+        require(_exists(tokenId), "ERC721URIStorage: URI query for nonexistent token");
+        return _tokenURIs[tokenId];
     }
 
     /**
@@ -61,11 +83,31 @@ contract ERC721Artist is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Royal
      * @param tokenId The tokenId to update.
      * @param uri     The new metadata uri.
      */
-    function setTokenURI(uint256 tokenId, string memory uri) public onlyOwner {
+    function setTokenURI(uint256 tokenId, string memory uri) external onlyOwner {
         if (bytes(uri).length > 0) {
             _setTokenURI(tokenId, uri);
         }
     }
+
+    /**
+     * @dev Sets `_tokenURI` as the tokenURI of `tokenId`.
+     *
+     * Requirements:
+     *
+     * - `tokenId` must exist.
+     */
+    function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal virtual {
+        require(_exists(tokenId), "ERC721URIStorage: URI set of nonexistent token");
+        _tokenURIs[tokenId] = _tokenURI;
+    }
+
+    //   _____   ______     __      _   _______ _____ ______  _____ 
+    //  |  __ \ / __ \ \   / //\   | | |__   __|_   _|  ____|/ ____|
+    //  | |__) | |  | \ \_/ //  \  | |    | |    | | | |__  | (___  
+    //  |  _  /| |  | |\   // /\ \ | |    | |    | | |  __|  \___ \ 
+    //  | | \ \| |__| | | |/ ____ \| |____| |   _| |_| |____ ____) |
+    //  |_|  \_\\____/  |_/_/    \_\______|_|  |_____|______|_____/ 
+    //                                                             
 
     /**
      * @dev Sets the contract roylaties for all tokens.
@@ -80,14 +122,7 @@ contract ERC721Artist is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Royal
     /**
      * @dev see {IERC165-supportsInterface}
      */
-    function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC721Enumerable, ERC721Royalties) returns (bool) {
+    function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC721Royalties, MultiOwnable) returns (bool) {
         return super.supportsInterface(interfaceId);
-    }
-
-    /**
-     * @dev see {ERC721Enumerable-_beforeTokenTransfer}
-     */
-    function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal override(ERC721, ERC721Enumerable) {
-        super._beforeTokenTransfer(from, to, tokenId);
     }
 }

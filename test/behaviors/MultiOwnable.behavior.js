@@ -109,6 +109,31 @@ const shouldBehaveLikeMultiOwnable = (contractFn) => {
                     .to.be.revertedWith('Ownable: caller is not the owner');
             });
         });
+
+        describe('renounceOwnership', () => {
+
+            beforeEach(async () => {
+                await contract.approveOwner(newOwner.address);
+                await contract.approveOwner(approved.address);
+            });
+
+            it('revokes multiple owners', async () => {
+                await contract.renounceOwnership();
+                expect((await contract.getOwners()).length).to.equal(0);
+            });
+            
+            it('sets owner as zero address', async () => {
+                await contract.renounceOwnership();
+                expect(await contract.owner()).to.equal(ethers.constants.AddressZero);
+            });
+
+            it('loses approval for all owners', async () => {
+                await contract.renounceOwnership();
+                expect(await contract.isOwner(owner.address)).to.be.false;
+                expect(await contract.isOwner(newOwner.address)).to.be.false;
+                expect(await contract.isOwner(approved.address)).to.be.false;
+            });
+        });
     });
 }
 

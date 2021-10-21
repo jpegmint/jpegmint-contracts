@@ -1,4 +1,5 @@
 const { expect } = require("chai");
+const { shouldSupportInterfaces } = require('./SupportsInterface.behavior');
 
 const shouldBehaveLikeOwnable = (contractFn) => {
 
@@ -7,6 +8,8 @@ const shouldBehaveLikeOwnable = (contractFn) => {
     beforeEach(() => {
         [ contract, [ owner, newOwner, approved, operator, other, toWhom ] ] = contractFn();
     });
+    
+    shouldSupportInterfaces(() => contract, ['Ownable']);
 
     context('with fresh contract', () => {
         it('has an owner', async () => {
@@ -59,6 +62,13 @@ const shouldBehaveLikeOwnable = (contractFn) => {
         it('prevents non-owners from renouncement', async () => {
             await expect(contract.connect(other).renounceOwnership())
                 .to.be.revertedWith('Ownable: caller is not the owner');
+        });
+
+        it('reverts after renouncement', async () => {
+            await contract.renounceOwnership();
+            await expect(contract.renounceOwnership())
+                .to.be.revertedWith('Ownable: caller is not the owner')
+            ;
         });
     });
 }
