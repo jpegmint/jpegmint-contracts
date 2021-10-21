@@ -48,7 +48,7 @@ const INTERFACES = {
         'getFeeRecipients(uint256)',
         'getFeeBps(uint256)'
     ],
-    RoyaltiesCreatorCore: [
+    RoyaltiesManifold: [
         'getRoyalties(uint256)'
     ],
     Ownable: [

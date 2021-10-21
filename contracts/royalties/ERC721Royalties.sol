@@ -4,11 +4,11 @@ pragma solidity ^0.8.4;
 
 /// @author jpegmint.xyz
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol"; 
 import "./IRoyaltiesERC2981.sol";
-import "./IRoyaltiesCreatorCore.sol";
+import "./IRoyaltiesManifold.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
-abstract contract ERC721Royalties is ERC721, IRoyaltiesERC2981, IRoyaltiesCreatorCore {
+abstract contract ERC721Royalties is ERC721, IRoyaltiesERC2981, IRoyaltiesManifold {
 
     address private _royaltiesRecipient;
     uint256 private _royaltiesBasisPoints;
@@ -19,7 +19,7 @@ abstract contract ERC721Royalties is ERC721, IRoyaltiesERC2981, IRoyaltiesCreato
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
         return
             interfaceId == type(IRoyaltiesERC2981).interfaceId ||
-            interfaceId == type(IRoyaltiesCreatorCore).interfaceId ||
+            interfaceId == type(IRoyaltiesManifold).interfaceId ||
             super.supportsInterface(interfaceId)
         ;
     }

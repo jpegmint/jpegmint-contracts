@@ -10,7 +10,7 @@ const shouldBehaveLikeERC721Royalties = (contractFn) => {
         [ owner, newOwner, approved, operator, other, royalties] = accounts;
     });
 
-    shouldSupportInterfaces(() => contract, ['RoyaltiesERC2981', 'RoyaltiesCreatorCore']);
+    shouldSupportInterfaces(() => contract, ['RoyaltiesERC2981', 'RoyaltiesManifold']);
 
     const royaltiesCorrectOnSale = (royaltiesFn) => {
 
@@ -26,7 +26,7 @@ const shouldBehaveLikeERC721Royalties = (contractFn) => {
             expect(royalties[1]).to.equal(royalty);
         });
 
-        it('returns correct Creator royalties', async () => {
+        it('returns correct Manifold royalties', async () => {
             const royalties = await contract.getRoyalties(1);
             expect(royalties[0].length).to.equal(1);
             expect(royalties[1].length).to.equal(1);
