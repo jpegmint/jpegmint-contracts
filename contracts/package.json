@@ -1,7 +1,7 @@
 {
   "name": "@jpegmint/contracts",
   "description": "Smart Contracts for Solidity",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "files": [
     "**/*.sol",
     "!/mocks/**/*"

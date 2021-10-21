@@ -116,26 +116,30 @@ abstract contract MultiOwnable is Context, IOwnable, ERC165 {
 
     /**
      * @dev Transfers primary ownership of the contract to specified address.
-     * Can only be called by the current owner.
      */
     function transferOwnership(address newOwner) public virtual override onlyOwner {
         require(newOwner != address(0), "Ownable: new owner is the zero address");
 
-        address oldOwner = _owners[0];
         uint256 checkIndex = _ownersIndex[newOwner];
-        bool isExistingOwner = _owners[checkIndex] == newOwner;
 
-        // Insert at front. If not an owner, push old to end. Otherwise swap.
-        _owners[0] = newOwner;
-        _ownersIndex[newOwner] = 0;
+        // If not already owner in spot 0...
+        if (!isOwner(newOwner) || checkIndex != 0) {
 
-        if (!isExistingOwner) {
-            _pushOwner(oldOwner);
-        } else {
-            _owners[checkIndex] = oldOwner;
-            _ownersIndex[oldOwner] = checkIndex;
+            address oldOwner = _owners[0];
+            
+            // Insert new owner at front.
+            _owners[0] = newOwner;
+            _ownersIndex[newOwner] = 0;
+
+            // Push old to end if new owner, otherwise swap with existing owner.
+            if (checkIndex == 0) {
+                _pushOwner(oldOwner);
+            } else {
+                _owners[checkIndex] = oldOwner;
+                _ownersIndex[oldOwner] = checkIndex;
+            }
+
+            emit OwnershipTransferred(oldOwner, newOwner);
         }
-
-        emit OwnershipTransferred(oldOwner, newOwner);
     }
 }

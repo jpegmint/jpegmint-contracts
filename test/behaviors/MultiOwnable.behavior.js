@@ -110,6 +110,60 @@ const shouldBehaveLikeMultiOwnable = (contractFn) => {
             });
         });
 
+        describe('transferOwnership', () => {
+    
+            it('noop txfr to same owner', async () => {
+                const txn = await contract.transferOwnership(owner.address);
+                const owners = await contract.getOwners();
+                expect(owners.length).to.equal(1);
+                expect(owners[0]).to.equal(owner.address);
+                expect(txn)
+                    .to.not.emit(contract, 'OwnershipTransferred')
+                ;
+            });
+    
+            it('transfers to additional new owner', async () => {
+                const txn = await contract.transferOwnership(newOwner.address);
+                const owners = await contract.getOwners();
+                expect(owners.length).to.equal(2);
+                expect(owners[0]).to.equal(newOwner.address);
+                expect(owners[1]).to.equal(owner.address);
+                expect(txn)
+                    .to.emit(contract, 'OwnershipTransferred')
+                    .withArgs(owner.address, newOwner.address)
+                ;
+            });
+            
+            it('transfers with 2+ owners', async () => {
+                await contract.approveOwner(approved.address);
+                const txn = await contract.transferOwnership(newOwner.address);
+                const owners = await contract.getOwners();
+                expect(owners.length).to.equal(3);
+                expect(owners[0]).to.equal(newOwner.address);
+                expect(owners[1]).to.equal(approved.address);
+                expect(owners[2]).to.equal(owner.address);
+                expect(txn)
+                    .to.emit(contract, 'OwnershipTransferred')
+                    .withArgs(owner.address, newOwner.address)
+                ;
+            });
+            
+            it('swaps when existing owner', async () => {
+                await contract.approveOwner(newOwner.address);
+                const txn = await contract.transferOwnership(newOwner.address);
+                const owners = await contract.getOwners();
+
+                expect(owners.length).to.equal(2);
+                expect(owners[0]).to.equal(newOwner.address);
+                expect(owners[1]).to.equal(owner.address);
+
+                expect(txn)
+                    .to.emit(contract, 'OwnershipTransferred')
+                    .withArgs(owner.address, newOwner.address)
+                ;
+            });
+        });
+
         describe('renounceOwnership', () => {
 
             beforeEach(async () => {
