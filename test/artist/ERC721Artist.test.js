@@ -8,7 +8,7 @@ const { shouldBehaveLikeMultiOwnable } = require('../behaviors/MultiOwnable.beha
 const { shouldBehaveLikeERC721Metadata } = require('../behaviors/ERC721Metadata.behavior');
 const { shouldBehaveLikeERC721Royalties } = require('../behaviors/ERC721Royalties.behavior');
 
-describe('ERC721Artist', () => {
+describe.only('ERC721Artist', () => {
 
     const CONTRACT_NAME = 'MockERC721Artist';
     const CONTRACT_SYMBOL = 'MockERC721Artist';
@@ -36,8 +36,8 @@ describe('ERC721Artist', () => {
     describe('ERC721', () => {
 
         beforeEach(async () => {
-            await contract.mint(owner.address, 1, 'ipfs://QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR');
-            await contract.mint(owner.address, 2, 'ipfs://QmSMvNG99QTD3WVFAy8zzJbDecCR5TRyZzJYoz6YSbQP7F');
+            await contract.mint(owner.address, 1, 'mock://QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR');
+            await contract.mint(owner.address, 2, 'mock://QmSMvNG99QTD3WVFAy8zzJbDecCR5TRyZzJYoz6YSbQP7F');
         });
 
         shouldBehaveLikeERC721(() => [ contract, accounts, 1, 2, 100 ]);
@@ -46,8 +46,8 @@ describe('ERC721Artist', () => {
     describe('ERC721Royalties', () => {
 
         beforeEach(async () => {
-            await contract.mint(owner.address, 1, 'ipfs://QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR');
-            await contract.mint(owner.address, 2, 'ipfs://QmSMvNG99QTD3WVFAy8zzJbDecCR5TRyZzJYoz6YSbQP7F');
+            await contract.mint(owner.address, 1, 'mock://QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR');
+            await contract.mint(owner.address, 2, 'mock://QmSMvNG99QTD3WVFAy8zzJbDecCR5TRyZzJYoz6YSbQP7F');
         });
         
         shouldBehaveLikeERC721Royalties(() => [ contract, accounts ]);
@@ -55,5 +55,17 @@ describe('ERC721Artist', () => {
 
     describe('ERC721Artist', () => {
         shouldBehaveLikeERC721Artist(() => [ contract, accounts ]);
+    });
+
+    describe.only('TokenMetadata', () => {
+
+        beforeEach(async () => {
+            await contract.mint(owner.address, 1);
+        });
+
+        it('sets metadata', async () => {
+            const metadata = await contract.setTokenMetadata(1, 'Token 1', 'This is the cool token!', 'mock://QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR', '');
+            console.log(await contract.getTokenMetadata(1));
+        });
     });
 });

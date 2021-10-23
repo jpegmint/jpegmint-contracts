@@ -5,17 +5,18 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/interfaces/IERC165.sol";
 import "@openzeppelin/contracts/interfaces/IERC721.sol";
 import "@openzeppelin/contracts/interfaces/IERC721Metadata.sol";
+import "../../access/IOwnable.sol";
 
 /**
  * @dev Minimal implementation https://eips.ethereum.org/EIPS/eip-721[ERC721] Non-Fungible Token Standard.
  */
-contract MyNFT is IERC165, IERC721, IERC721Metadata {
+contract MyNFT is IERC165, IERC721, IERC721Metadata, IOwnable {
 
     /// VARIABLES ///
-    address public owner;
-    string public baseURI;
+    address public override owner;
     string public override name;
     string public override symbol;
+    string public baseURI;
     uint16 public totalSupply;
 
     /// MAPPINGS ///
@@ -35,7 +36,8 @@ contract MyNFT is IERC165, IERC721, IERC721Metadata {
         return
             interfaceId == type(IERC165).interfaceId ||
             interfaceId == type(IERC721).interfaceId ||
-            interfaceId == type(IERC721Metadata).interfaceId;
+            interfaceId == type(IERC721Metadata).interfaceId ||
+            interfaceId == type(IOwnable).interfaceId;
     }
     
     //   __  __ _____ _   _ _______ _____ _   _  _____ 
@@ -112,31 +114,6 @@ contract MyNFT is IERC165, IERC721, IERC721Metadata {
         _mintedTokens[tokenId] = metadataURI;
     }
 
-    //================================================================================
-    // OWNABLE
-    //================================================================================
-
-    /**
-     * @dev Throws if called by any account other than the owner.
-     */
-    modifier onlyOwner() {
-        require(owner == msg.sender);
-        _;
-    }
-
-    /**
-     * @dev Transfers ownership of the contract to a new account (`newOwner`).
-     * Can only be called by the current owner.
-     */
-    function transferOwnership(address newOwner) public virtual onlyOwner {
-        require(newOwner != address(0));
-        owner = newOwner;
-    }
-
-    //================================================================================
-    // ERC721
-    //================================================================================
-
     /**
      * @dev See {IERC721-balanceOf}.
      */
@@ -153,25 +130,54 @@ contract MyNFT is IERC165, IERC721, IERC721Metadata {
         return owner;
     }
 
+    //    ______          ___   _          ____  _      ______ 
+    //   / __ \ \        / / \ | |   /\   |  _ \| |    |  ____|
+    //  | |  | \ \  /\  / /|  \| |  /  \  | |_) | |    | |__   
+    //  | |  | |\ \/  \/ / | . ` | / /\ \ |  _ <| |    |  __|  
+    //  | |__| | \  /\  /  | |\  |/ ____ \| |_) | |____| |____ 
+    //   \____/   \/  \/   |_| \_/_/    \_\____/|______|______|
+    //                                                         
+
     /**
-     * @dev See {IERC721-approve}.
+     * @dev Throws if called by any account other than the owner.
      */
-    function approve(address, uint256) public virtual override {
+    modifier onlyOwner() {
+        require(owner == msg.sender);
+        _;
+    }
+    
+    /**
+     * @dev Prevent use of renounceOwnership to ensure burn/mint is always possible.
+     */
+    function renounceOwnership() external virtual override onlyOwner {
         revert();
     }
 
+    /**
+     * @dev Transfers ownership of the contract to a new account (`newOwner`).
+     * Can only be called by the current owner.
+     */
+    function transferOwnership(address newOwner) external virtual override onlyOwner {
+        require(newOwner != address(0));
+        
+        address oldOwner = owner;
+        owner = newOwner;
+        emit OwnershipTransferred(oldOwner, newOwner);
+    }
+
+    //   _______ _____            _   _  _____ ______ ______ _____   _____ 
+    //  |__   __|  __ \     /\   | \ | |/ ____|  ____|  ____|  __ \ / ____|
+    //     | |  | |__) |   /  \  |  \| | (___ | |__  | |__  | |__) | (___  
+    //     | |  |  _  /   / /\ \ | . ` |\___ \|  __| |  __| |  _  / \___ \ 
+    //     | |  | | \ \  / ____ \| |\  |____) | |    | |____| | \ \ ____) |
+    //     |_|  |_|  \_\/_/    \_\_| \_|_____/|_|    |______|_|  \_\_____/ 
+    //                                                                     
+                                                                    
     /**
      * @dev See {IERC721-getApproved}.
      */
     function getApproved(uint256) public view virtual override returns (address) {
         return address(0);
-    }
-
-    /**
-     * @dev See {IERC721-setApprovalForAll}.
-     */
-    function setApprovalForAll(address, bool) public virtual override {
-        revert();
     }
 
     /**
@@ -182,7 +188,24 @@ contract MyNFT is IERC165, IERC721, IERC721Metadata {
     }
 
     /**
+     * @dev See {IERC721-approve}.
+     * https://eips.ethereum.org/EIPS/eip-721 Read only NFT registry
+     */
+    function approve(address, uint256) public virtual override {
+        revert();
+    }
+
+    /**
      * @dev See {IERC721-setApprovalForAll}.
+     * https://eips.ethereum.org/EIPS/eip-721 Read only NFT registry
+     */
+    function setApprovalForAll(address, bool) public virtual override {
+        revert();
+    }
+
+    /**
+     * @dev See {IERC721-setApprovalForAll}.
+     * https://eips.ethereum.org/EIPS/eip-721 Read only NFT registry
      */
     function transferFrom(address, address, uint256) public virtual override {
         revert();
@@ -190,6 +213,7 @@ contract MyNFT is IERC165, IERC721, IERC721Metadata {
 
     /**
      * @dev See {IERC721-safeTransferFrom}.
+     * https://eips.ethereum.org/EIPS/eip-721 Read only NFT registry
      */
     function safeTransferFrom(address, address, uint256) public virtual override {
         revert();
@@ -197,6 +221,7 @@ contract MyNFT is IERC165, IERC721, IERC721Metadata {
     
     /**
      * @dev See {IERC721-safeTransferFrom}.
+     * https://eips.ethereum.org/EIPS/eip-721 Read only NFT registry
      */
     function safeTransferFrom(address, address, uint256, bytes memory) public virtual override {
         revert();

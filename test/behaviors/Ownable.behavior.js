@@ -3,10 +3,11 @@ const { shouldSupportInterfaces } = require('./SupportsInterface.behavior');
 
 const shouldBehaveLikeOwnable = (contractFn) => {
 
-    let contract, owner, newOwner, approved, operator, other;
+    let contract, accounts, owner, newOwner, approved, operator, other;
 
     beforeEach(() => {
-        [ contract, [ owner, newOwner, approved, operator, other, toWhom ] ] = contractFn();
+        [ contract, accounts ] = contractFn();
+        [ owner, newOwner, approved, operator, other, toWhom ] = accounts;
     });
     
     shouldSupportInterfaces(() => contract, ['Ownable']);
@@ -38,12 +39,14 @@ const shouldBehaveLikeOwnable = (contractFn) => {
 
         it('prevents non-owners from transferring', async () => {
             await expect(contract.connect(other).transferOwnership(newOwner.address))
-                .to.be.revertedWith('Ownable: caller is not the owner');
+                .to.be.revertedWith('Ownable: caller is not the owner')
+            ;
         });
 
         it('guards ownership against stuck state', async () => {
             await expect(contract.transferOwnership(ethers.constants.AddressZero))
-                .to.be.revertedWith('Ownable: new owner is the zero address');
+                .to.be.revertedWith('Ownable: new owner is the zero address')
+            ;
         });
     });
 

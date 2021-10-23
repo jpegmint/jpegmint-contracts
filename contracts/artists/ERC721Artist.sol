@@ -13,7 +13,15 @@ contract ERC721Artist is ERC721, ERC721Royalties, MultiOwnable {
     /// VARIABLES ///
     uint256 public totalSupply;
     
-    mapping(uint256 => string) private _tokenURIs;
+    /// MAPPINGS ///
+    mapping(uint256 => TokenMetadata) private _tokenMetadata;
+
+    struct TokenMetadata {
+        string name;
+        string description;
+        string image;
+        string animation;
+    }
     
     /// CONSTRUCTOR ///
     constructor(string memory name, string memory symbol) ERC721(name, symbol) {}
@@ -36,15 +44,10 @@ contract ERC721Artist is ERC721, ERC721Royalties, MultiOwnable {
      *
      * @param to      Address to mint to.
      * @param tokenId Desired tokenId.
-     * @param uri     Metadata uri for the token.
      */
-    function mint(address to, uint256 tokenId, string memory uri) public onlyOwner {
+    function mint(address to, uint256 tokenId) public onlyOwner {
 
         _safeMint(to, tokenId);
-
-        if (bytes(uri).length > 0) {
-            _setTokenURI(tokenId, uri);
-        }
 
         totalSupply++;
     }
@@ -58,10 +61,7 @@ contract ERC721Artist is ERC721, ERC721Royalties, MultiOwnable {
         require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721Burnable: caller is not owner nor approved");
         
         _burn(tokenId);
-        
-        if (bytes(_tokenURIs[tokenId]).length != 0) {
-            delete _tokenURIs[tokenId];
-        }
+        delete _tokenMetadata[tokenId];
 
         totalSupply--;
     }
@@ -78,32 +78,69 @@ contract ERC721Artist is ERC721, ERC721Royalties, MultiOwnable {
      * @dev See {IERC721Metadata-tokenURI}.
      */
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-        require(_exists(tokenId), "ERC721URIStorage: URI query for nonexistent token");
-        return _tokenURIs[tokenId];
+        _requireExistingToken(tokenId);
+        return getTokenMetadata(tokenId);
     }
 
-    /**
-     * @dev Updates the metadata uri for a token.
-     *
-     * @param tokenId The tokenId to update.
-     * @param uri     The new metadata uri.
-     */
-    function setTokenURI(uint256 tokenId, string memory uri) external onlyOwner {
-        if (bytes(uri).length > 0) {
-            _setTokenURI(tokenId, uri);
+    function setTokenMetadata(
+        uint256 tokenId,
+        string memory tokenName,
+        string memory tokenDescription,
+        string memory tokenImage,
+        string memory tokenAnimation
+    ) external onlyOwner {
+        _requireExistingToken(tokenId);
+        _tokenMetadata[tokenId] = TokenMetadata(
+            tokenName,
+            tokenDescription,
+            tokenImage,
+            tokenAnimation
+        );
+    }
+    
+    function setTokenName(uint256 tokenId, string memory tokenName) external onlyOwner {
+        _requireExistingToken(tokenId);
+        _tokenMetadata[tokenId].name = tokenName;
+    }
+    
+    function setTokenDescription(uint256 tokenId, string memory tokenDescription) external onlyOwner {
+        _requireExistingToken(tokenId);
+        _tokenMetadata[tokenId].description = tokenDescription;
+    }
+    
+    function setTokenImage(uint256 tokenId, string memory tokenImage) external onlyOwner {
+        _requireExistingToken(tokenId);
+        _tokenMetadata[tokenId].image = tokenImage;
+    }
+    
+    function setTokenAnimation(uint256 tokenId, string memory tokenAnimation) external onlyOwner {
+        _requireExistingToken(tokenId);
+        _tokenMetadata[tokenId].animation = tokenAnimation;
+    }
+
+    function getTokenMetadata(uint256 tokenId) public view returns (string memory) {
+        _requireExistingToken(tokenId);
+        TokenMetadata memory metadata = _tokenMetadata[tokenId];
+
+        bytes memory byteString = 'data:application/json;utf8,{';
+        
+        byteString = abi.encodePacked(byteString, '"name": "', metadata.name, '",');
+        byteString = abi.encodePacked(byteString, '"image": "', metadata.image, '",');
+        byteString = abi.encodePacked(byteString, '"image_uri": "', metadata.image, '",');
+
+        if (keccak256(bytes(metadata.animation)) != keccak256(bytes(''))) {
+            byteString = abi.encodePacked(byteString, '"animation": "', metadata.animation, '",');
+            byteString = abi.encodePacked(byteString, '"animation_url": "', metadata.animation, '",');
         }
+
+        byteString = abi.encodePacked(byteString, '"description": "', metadata.description, '"');
+        byteString = abi.encodePacked(byteString, '}');
+
+        return string(byteString);
     }
 
-    /**
-     * @dev Sets `_tokenURI` as the tokenURI of `tokenId`.
-     *
-     * Requirements:
-     *
-     * - `tokenId` must exist.
-     */
-    function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal virtual {
-        require(_exists(tokenId), "ERC721URIStorage: URI set of nonexistent token");
-        _tokenURIs[tokenId] = _tokenURI;
+    function _requireExistingToken(uint256 tokenId) internal view {
+        require(_exists(tokenId), "ERC721URIStorage: Metadata set of nonexistent token");
     }
 
     //   _____   ______     __      _   _______ _____ ______  _____ 
