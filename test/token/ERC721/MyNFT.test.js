@@ -6,7 +6,7 @@ const { shouldSupportInterfaces } = require('../../behaviors/SupportsInterface.b
 const { shouldBehaveLikeERC721Mint } = require('../../behaviors/ERC721Mint.behavior');
 const { shouldBehaveLikeERC721Metadata } = require('../../behaviors/ERC721Metadata.behavior');
 
-describe('MyNFT', function () {
+describe.only('MyNFT', function () {
 
     const CONTRACT_NAME = 'MyNFT';
     const TOKEN_NAME = 'MyNFT';
@@ -44,38 +44,10 @@ describe('MyNFT', function () {
     });
 
     describe('Ownable', () => {
-
+        
         describe('owner', () => {
             it('allows anyone to query owner', async () => {
                 expect(await contract.connect(other).owner()).to.equal(owner.address);
-            });
-        });
-
-        describe('transferOwnership', () => {
-
-            it('emits OwnershipTransferred event', async () => {
-                const tx = await contract.transferOwnership(newOwner.address);
-                expect(tx)
-                    .to.emit(contract, 'OwnershipTransferred')
-                    .withArgs(owner.address, newOwner.address)
-                ; 
-            });
-
-            it('changes owner after transfer', async () => {
-                await contract.transferOwnership(newOwner.address);
-                expect(await contract.owner()).to.equal(newOwner.address);
-            });
-
-            it('prevents non-owners from transferring', async () => {
-                await expect(contract.connect(other).transferOwnership(newOwner.address))
-                    .to.be.revertedWith('')
-                ;
-            });
-
-            it('guards ownership against stuck state', async () => {
-                await expect(contract.transferOwnership(ethers.constants.AddressZero))
-                    .to.be.revertedWith('')
-                ;
             });
         });
     });

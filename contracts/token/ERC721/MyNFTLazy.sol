@@ -19,7 +19,7 @@ import "../../access/IOwnable.sol";
  *  ╚═╝     ╚═╝   ╚═╝   ╚═╝  ╚═══╝╚═╝        ╚═╝   
  *                                             
  */
-contract MyNFT is IERC165, IERC721, IERC721Metadata, IOwnable {
+contract MyNFTLazy is IERC165, IERC721, IERC721Metadata, IOwnable {
     
     // Contract & token owner
     address public override owner;
@@ -84,6 +84,11 @@ contract MyNFT is IERC165, IERC721, IERC721Metadata, IOwnable {
         _mintedTokens[tokenId] = metadataURI;
         totalSupply++;
 
+        emit Transfer(address(0), owner, tokenId);
+    }
+
+    function lazyMint(uint16 tokenId) public virtual {
+        require(msg.sender == owner && !_exists(tokenId));
         emit Transfer(address(0), owner, tokenId);
     }
 

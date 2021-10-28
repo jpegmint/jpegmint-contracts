@@ -72,7 +72,7 @@ contract GremlinsAirdrop is ERC721Lean, AccessControl, Ownable {
      * @dev Helper function to pair with total supply.
      */
     function availableSupply() public view returns (uint256) {
-        return _tokenMaxSupply - totalSupply();
+        return _tokenMaxSupply - totalSupply;
     }
 
     //================================================================================

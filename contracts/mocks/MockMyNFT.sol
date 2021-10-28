@@ -7,10 +7,5 @@ pragma solidity ^0.8.4;
 import "../token/ERC721/MyNFT.sol";
 
 contract MockMyNFT is MyNFT {
-    
     constructor() MyNFT("MockMyNFT", "MockMyNFT") {}
-
-    function mint(uint16 tokenId) public {
-        super.mint(tokenId, "");
-    }
 }

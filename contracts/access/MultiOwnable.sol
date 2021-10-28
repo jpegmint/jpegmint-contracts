@@ -101,7 +101,7 @@ abstract contract MultiOwnable is Context, IOwnable, ERC165 {
      * @dev Leaves the contract without owner. It will not be possible to call
      * `onlyOwner` functions anymore. Can only be called by the current owner.
      */
-    function renounceOwnership() public virtual override onlyOwner {
+    function renounceOwnership() public virtual onlyOwner {
 
         address oldOwner = owner();
 
@@ -117,7 +117,7 @@ abstract contract MultiOwnable is Context, IOwnable, ERC165 {
     /**
      * @dev Transfers primary ownership of the contract to specified address.
      */
-    function transferOwnership(address newOwner) public virtual override onlyOwner {
+    function transferOwnership(address newOwner) public virtual onlyOwner {
         require(newOwner != address(0), "Ownable: new owner is the zero address");
 
         uint256 checkIndex = _ownersIndex[newOwner];

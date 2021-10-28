@@ -52,9 +52,7 @@ const INTERFACES = {
         'getRoyalties(uint256)'
     ],
     Ownable: [
-        'owner()',
-        'renounceOwnership()',
-        'transferOwnership(address)',
+        'owner()'
     ],
     AccessControl: [
         'hasRole(bytes32,address)',
