@@ -1,5 +1,4 @@
 const { expect } = require("chai");
-const { shouldSupportInterfaces } = require('./SupportsInterface.behavior');
 
 const shouldBehaveLikeOwnable = (contractFn) => {
 
@@ -9,8 +8,6 @@ const shouldBehaveLikeOwnable = (contractFn) => {
         [ contract, accounts ] = contractFn();
         [ owner, newOwner, approved, operator, other, toWhom ] = accounts;
     });
-    
-    shouldSupportInterfaces(() => contract, ['Ownable']);
 
     context('with fresh contract', () => {
         it('has an owner', async () => {

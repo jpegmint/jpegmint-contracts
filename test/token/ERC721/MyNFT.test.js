@@ -6,7 +6,7 @@ const { shouldSupportInterfaces } = require('../../behaviors/SupportsInterface.b
 const { shouldBehaveLikeERC721Mint } = require('../../behaviors/ERC721Mint.behavior');
 const { shouldBehaveLikeERC721Metadata } = require('../../behaviors/ERC721Metadata.behavior');
 
-describe.only('MyNFT', function () {
+describe('MyNFT', function () {
 
     const CONTRACT_NAME = 'MyNFT';
     const TOKEN_NAME = 'MyNFT';

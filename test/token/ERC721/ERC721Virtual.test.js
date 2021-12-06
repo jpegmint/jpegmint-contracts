@@ -37,15 +37,10 @@ describe('ERC721Virtual', () =>  {
 
         it('correctly mints', async () =>  {
             
-            await contract.mint();
-
-            let filter = await contract.filters.Transfer();
-            let logs = await ethers.provider.getLogs(filter);
-            logs.forEach((log) => {
-                let logDescription = contract.interface.parseLog(log);
-                console.log(logDescription);
-            });
-
+            const txn = await contract.mint();
+            expect(txn).to.emit(contract, 'Transfer')
+                .withArgs(ethers.constants.AddressZero, owner.address, owner.address)
+            ;
         });
     });
 });
