@@ -10,7 +10,7 @@ const { shouldBehaveLikeERC721Metadata } = require('../behaviors/ERC721Metadata.
 const { shouldBehaveLikeERC721Royalties } = require('../behaviors/ERC721Royalties.behavior');
 const { shouldBehaveLikeERC721URIstorage } = require('../behaviors/ERC721URIStorage.behavior');
 
-describe.only('GremlinsAirdrop', () => {
+describe('GremlinsAirdrop', () => {
     
     const TOKEN_NAME = 'Airdrop'
     const TOKEN_SYMBOL = 'AIRDROP';

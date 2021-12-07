@@ -8,7 +8,7 @@ const { shouldBehaveLikeAccessControl } = require('../behaviors/AccessControl.be
 const { shouldBehaveLikeERC721Metadata } = require('../behaviors/ERC721Metadata.behavior');
 const { shouldBehaveLikeERC721Royalties } = require('../behaviors/ERC721Royalties.behavior');
 
-describe.only('GremlinsERC721', () => {
+describe('GremlinsERC721', () => {
     
     const CONTRACT_NAME = 'GremlinsERC721';
     const DEFAULT_ADMIN_ROLE = ethers.constants.HashZero;
