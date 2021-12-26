@@ -1,6 +1,6 @@
 {
   "name": "@jpegmint/jpegmint-solidity",
-  "version": "5.1.0",
+  "version": "6.0.0",
   "description": "Smart Contract libraries for Solidity",
   "scripts": {
     "test": "hardhat test"
@@ -23,6 +23,7 @@
   "dependencies": {
     "@openzeppelin/contracts": "^4.3.0",
     "@openzeppelin/contracts-upgradeable": "^4.3.3",
+    "@openzeppelin/hardhat-upgrades": "^1.12.0",
     "dotenv": "^10.0.0"
   },
   "devDependencies": {
